@@ -14,6 +14,8 @@ app.mount("/static", StaticFiles(directory="static"), name="static")
 
 templates = Jinja2Templates(directory="templates")
 
+MAX_SIZE = 32 * 1024 * 1024
+
 
 @app.get("/", response_class=HTMLResponse)
 async def read_item(request: Request):
@@ -24,6 +26,12 @@ async def read_item(request: Request):
 async def score_files(reference: UploadFile, distorted: UploadFile):
     if reference.filename is None or distorted.filename is None:
         return {"error": "Filenames are required"}
+
+    if reference.size is None or distorted.size is None:
+        return {"error": "Empty file"}
+
+    if reference.size or distorted.size > MAX_SIZE:
+        return {"error": "File too large. Maximum size is 32 MB."}
 
     with TemporaryDirectory() as tmp_dir:
         ref_path = Path(tmp_dir) / reference.filename
