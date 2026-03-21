@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>VMAF Scoring</title>
+    <link href="{{ url_for('static', path='/styles.css') }}" rel="stylesheet">
+</head>
+<body>
+    <main>
+        <h1>VMAF Scoring</h1>
+        <form action="/files" method="post" enctype="multipart/form-data">
+            <div class="field">
+                <label for="reference">Reference</label>
+                <input type="file" id="reference" name="reference" accept=".mp4">
+            </div>
+            <div class="field">
+                <label for="distorted">Distorted</label>
+                <input type="file" id="distorted" name="distorted" accept=".mp4">
+            </div>
+            <button type="submit">Score Videos</button>
+        </form>
+        <div id="result-box" class="result-box hidden">
+            <span class="result-label">VMAF Score</span>
+            <span id="result" class="result-value"></span>
+        </div>
+        <div id="error-box" class="error-box hidden"></div>
+    </main>
+    <script>
+        const form = document.querySelector('form');
+        const button = form.querySelector('button');
+        const inputs = form.querySelectorAll('input[type="file"]');
+        const resultBox = document.getElementById('result-box');
+        const result = document.getElementById('result');
+        const errorBox = document.getElementById('error-box');
+
+        function animateScore(el, target) {
+            const num = parseFloat(target);
+            if (isNaN(num)) { el.textContent = target; return; }
+            const decimals = (target.toString().split('.')[1] || '').length;
+            const duration = 600;
+            const start = performance.now();
+            function tick(now) {
+                const t = Math.min((now - start) / duration, 1);
+                const ease = 1 - Math.pow(1 - t, 4);
+                el.textContent = (num * ease).toFixed(decimals);
+                if (t < 1) requestAnimationFrame(tick);
+            }
+            requestAnimationFrame(tick);
+        }
+
+        form.addEventListener('submit', async (event) => {
+            event.preventDefault();
+
+            resultBox.classList.add('hidden');
+            errorBox.classList.add('hidden');
+
+            const formData = new FormData(form);
+
+            button.textContent = 'Scoring\u2026';
+            button.disabled = true;
+            inputs.forEach(input => input.disabled = true);
+
+            try {
+                const response = await fetch('/files', {
+                    method: 'POST',
+                    body: formData,
+                });
+                const data = await response.json();
+
+                if (!response.ok) {
+                    const detail = data.detail;
+                    const msg = Array.isArray(detail)
+                        ? detail.map(d => d.msg).join(', ')
+                        : data.error || 'Scoring failed';
+                    throw new Error(msg);
+                }
+
+                resultBox.classList.remove('hidden');
+                animateScore(result, data.vmaf_score);
+            } catch (err) {
+                errorBox.textContent = err.message || 'Something went wrong. Try again.';
+                errorBox.classList.remove('hidden');
+            } finally {
+                button.textContent = 'Score Videos';
+                button.disabled = false;
+                inputs.forEach(input => input.disabled = false);
+            }
+        });
+    </script>
+</body>
+</html>

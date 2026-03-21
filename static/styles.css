@@ -1,0 +1,208 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: system-ui, -apple-system, sans-serif;
+    max-width: 480px;
+    margin: 0 auto;
+    padding: 80px 20px;
+    background: #0a0a0a;
+    color: #e5e5e5;
+}
+
+@media (prefers-reduced-motion: reduce) {
+    *, *::before, *::after {
+        animation-duration: 0.01ms !important;
+        transition-duration: 0.01ms !important;
+    }
+}
+
+/* Staggered entrance */
+@keyframes enter {
+    from { opacity: 0; transform: translateY(12px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+h1, .field, button[type="submit"] {
+    animation: enter 0.4s cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+
+h1 { animation-delay: 0ms; }
+.field:nth-child(1) { animation-delay: 60ms; }
+.field:nth-child(2) { animation-delay: 120ms; }
+button[type="submit"] { animation-delay: 180ms; }
+
+h1 {
+    font-size: 2rem;
+    font-weight: 700;
+    margin-bottom: 0.3rem;
+    letter-spacing: -0.5px;
+}
+
+h1::after {
+    content: '';
+    display: block;
+    width: 2rem;
+    height: 3px;
+    background: #d4c896;
+    margin-top: 0.75rem;
+    margin-bottom: 2rem;
+    border-radius: 2px;
+}
+
+form {
+    display: flex;
+    flex-direction: column;
+    gap: 1.25rem;
+}
+
+.field {
+    display: flex;
+    flex-direction: column;
+    gap: 0.4rem;
+}
+
+label {
+    font-size: 0.75rem;
+    color: #888;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    font-weight: 500;
+}
+
+input[type="file"] {
+    font-family: inherit;
+    font-size: 0.85rem;
+    color: #e5e5e5;
+    background: #111;
+    border: 1px solid #222;
+    border-radius: 6px;
+    padding: 0.6rem 0.75rem;
+    cursor: pointer;
+    transition: border-color 0.2s, background 0.2s;
+}
+
+input[type="file"]:hover {
+    border-color: #444;
+    background: #151515;
+}
+
+input[type="file"]:focus-visible {
+    outline: none;
+    border-color: #d4c896;
+}
+
+input[type="file"]::file-selector-button {
+    font-family: inherit;
+    font-size: 0.8rem;
+    font-weight: 500;
+    color: #e5e5e5;
+    background: #1a1a1a;
+    border: 1px solid #333;
+    border-radius: 4px;
+    padding: 0.35rem 0.75rem;
+    margin-right: 0.75rem;
+    cursor: pointer;
+    transition: background 0.2s, border-color 0.2s;
+}
+
+input[type="file"]::file-selector-button:hover {
+    background: #222;
+    border-color: #444;
+}
+
+button[type="submit"] {
+    font-family: inherit;
+    font-size: 0.85rem;
+    font-weight: 600;
+    color: #0a0a0a;
+    background: #d4c896;
+    border: none;
+    border-radius: 6px;
+    padding: 0.75rem 1.25rem;
+    margin-top: 0.5rem;
+    cursor: pointer;
+    transition: background 0.2s, transform 0.15s, opacity 0.2s;
+}
+
+button[type="submit"]:hover {
+    background: #e0d4a8;
+}
+
+button[type="submit"]:active {
+    background: #c4b886;
+    transform: scale(0.98);
+}
+
+button[type="submit"]:disabled {
+    background: #1a1a1a;
+    color: #555;
+    cursor: not-allowed;
+    transform: none;
+}
+
+button[type="submit"]:focus-visible {
+    outline: 2px solid #d4c896;
+    outline-offset: 2px;
+}
+
+/* Scoring spinner */
+@keyframes pulse {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.5; }
+}
+
+button[type="submit"]:disabled {
+    animation: pulse 1.5s ease-in-out infinite;
+}
+
+/* Result entrance */
+@keyframes reveal {
+    from { opacity: 0; transform: translateY(8px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+.result-box {
+    display: flex;
+    flex-direction: column;
+    gap: 0.25rem;
+    margin-top: 2rem;
+    padding: 1.25rem 1.5rem;
+    background: #111;
+    border: 1px solid #1a1a1a;
+    border-radius: 8px;
+    animation: reveal 0.35s cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+
+.result-label {
+    font-size: 0.7rem;
+    color: #666;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+}
+
+.result-value {
+    font-size: 2.5rem;
+    font-weight: 700;
+    color: #d4c896;
+    letter-spacing: -1px;
+    font-variant-numeric: tabular-nums;
+}
+
+.error-box {
+    margin-top: 1.25rem;
+    padding: 0.75rem 1rem;
+    font-size: 0.85rem;
+    color: #c99;
+    background: rgba(200, 150, 150, 0.08);
+    border: 1px solid rgba(200, 150, 150, 0.2);
+    border-radius: 6px;
+    animation: reveal 0.35s cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+
+.hidden {
+    display: none;
+}
