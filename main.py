@@ -30,7 +30,7 @@ async def score_files(reference: UploadFile, distorted: UploadFile):
     if reference.size is None or distorted.size is None:
         return {"error": "Empty file"}
 
-    if reference.size or distorted.size > MAX_SIZE:
+    if reference.size > MAX_SIZE or distorted.size > MAX_SIZE:
         return {"error": "File too large. Maximum size is 32 MB."}
 
     with TemporaryDirectory() as tmp_dir:
