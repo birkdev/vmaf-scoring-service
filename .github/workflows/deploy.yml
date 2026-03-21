@@ -1,0 +1,29 @@
+name: Deploy to GCR
+
+on:
+    push:
+        branches: [master]
+
+jobs:
+    deploy:
+        runs-on: ubuntu-latest
+        steps:
+            - uses: actions/checkout@v5
+
+            - uses: google-github-actions/auth@v2
+              with:
+                credentials_json: ${{ secrets.GCP_SA_KEY }}
+
+            - uses: google-github-actions/setup-gcloud@v2
+
+            - run: gcloud auth configure-docker --quiet
+
+            - run: docker build -t gcr.io/vmaf-scoring-service/vmaf-scoring-service .
+
+            - run: docker push gcr.io/vmaf-scoring-service/vmaf-scoring-service
+
+            - uses: google-github-actions/deploy-cloudrun@v2
+              with:
+                service: vmaf-scoring-service
+                image: gcr.io/vmaf-scoring-service/vmaf-scoring-service
+                region: europe-north1
