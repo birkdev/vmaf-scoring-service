@@ -5,11 +5,13 @@ from fastapi.templating import Jinja2Templates
 from tempfile import TemporaryDirectory
 from pathlib import Path
 from vmaf import vmaf
+from monitor import init_db
 import shutil
 import sqlite3
 
 
 app = FastAPI()
+init_db()
 
 app.mount("/static", StaticFiles(directory="static"), name="static")
 
