@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Monitor</title>
+    <link href="{{ url_for('static', path='/styles.css') }}" rel="stylesheet">
+    <style>
+        body { max-width: 720px; }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 0.85rem;
+            margin-top: 1.5rem;
+        }
+
+        th {
+            font-size: 0.7rem;
+            color: #666;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            text-align: left;
+            padding: 0.5rem 0.75rem;
+            border-bottom: 1px solid #222;
+        }
+
+        td {
+            padding: 0.5rem 0.75rem;
+            border-bottom: 1px solid #151515;
+            font-variant-numeric: tabular-nums;
+        }
+
+        tr { animation: enter 0.4s cubic-bezier(0.16, 1, 0.3, 1) both; }
+
+        .status-ok { color: #8cb88c; }
+        .status-err { color: #c99; }
+
+        .ms { color: #888; }
+
+        .error-text {
+            color: #c99;
+            font-size: 0.8rem;
+        }
+
+        .empty {
+            color: #555;
+            text-align: center;
+            padding: 3rem 0;
+        }
+    </style>
+</head>
+<body>
+    <main>
+        <h1>Monitor</h1>
+        {% if checks %}
+        <table>
+            <thead>
+                <tr>
+                    <th>Time</th>
+                    <th>Status</th>
+                    <th>Response</th>
+                    <th>Error</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for c in checks %}
+                <tr>
+                    <td>{{ c.timestamp[:19] | replace("T", " ") }}</td>
+                    <td>
+                        {% if c.status_code %}
+                            <span class="{{ 'status-ok' if c.status_code == 200 else 'status-err' }}">{{ c.status_code }}</span>
+                        {% else %}
+                            <span class="status-err">--</span>
+                        {% endif %}
+                    </td>
+                    <td class="ms">{{ c.response_ms if c.response_ms else '--' }} ms</td>
+                    <td class="error-text">{{ c.error or '' }}</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+        {% else %}
+        <p class="empty">No checks recorded yet.</p>
+        {% endif %}
+    </main>
+</body>
+</html>

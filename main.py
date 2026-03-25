@@ -6,6 +6,7 @@ from tempfile import TemporaryDirectory
 from pathlib import Path
 from vmaf import vmaf
 import shutil
+import sqlite3
 
 
 app = FastAPI()
@@ -15,6 +16,20 @@ app.mount("/static", StaticFiles(directory="static"), name="static")
 templates = Jinja2Templates(directory="templates")
 
 MAX_SIZE = 32 * 1024 * 1024
+
+
+@app.get("/monitor", response_class=HTMLResponse)
+async def monitor(request: Request):
+    con = sqlite3.connect("data/monitor.db")
+    con.row_factory = sqlite3.Row
+    checks = con.execute("SELECT * FROM checks ORDER BY id DESC LIMIT 100").fetchall()
+    con.close()
+    return templates.TemplateResponse(request, "monitor.html", {"checks": checks})
+
+
+@app.get("/health")
+async def health():
+    return {"status": "ok"}
 
 
 @app.get("/", response_class=HTMLResponse)
