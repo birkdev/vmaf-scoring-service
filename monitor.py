@@ -1,9 +1,11 @@
 import httpx
+import os
 import sqlite3
 import time
 from datetime import datetime, timezone
 
 DB_PATH = "data/monitor.db"
+os.makedirs("data", exist_ok=True)
 TARGET = "https://vmaf.contentnetwork.net/"
 
 
